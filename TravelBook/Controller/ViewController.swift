@@ -26,7 +26,17 @@ class ViewController: UIViewController, MKMapViewDelegate , CLLocationManagerDel
     }
     
     
-   
+    // alınan locationlarla ne işlem yapacağımızı belirlediğimiz fonksiyon
+    func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
+        
+        let location = CLLocationCoordinate2D(latitude: locations[0].coordinate.latitude, longitude: locations[0].coordinate.longitude)  // oluşan bir locationa zoomlamak için
+        let span = MKCoordinateSpan(latitudeDelta: 0.1, longitudeDelta: 0.1) // zoom seviyesi seçmemiz gerek
+        let region = MKCoordinateRegion(center: location, span: span)
+        mapView.setRegion(region, animated: true)
+        
+        
+    }
+
 
 }
 
