@@ -26,11 +26,28 @@ class ViewController: UIViewController, MKMapViewDelegate , CLLocationManagerDel
         locationManager.requestWhenInUseAuthorization() // kullanıcının konumuna ne zaman ulaşacağımızı seçmeliyiz.
         locationManager.startUpdatingLocation() // kullanıcı konumu bu komut ile alınmaya başlanıyor
         
-        
+        //Recognizers
         // pinleme işlemi
         let gestureRecognizer = UILongPressGestureRecognizer(target: self, action: #selector(chooseLocation(gestureRecognizer: ))) //uzun basınca çağırılacak
         gestureRecognizer.minimumPressDuration = 2 // kullanıcının minimum ne kadar süre basacağını belirleriz.
         mapView.addGestureRecognizer(gestureRecognizer)
+         
+        //HideKeyboard
+        let gestureKeyboard = UITapGestureRecognizer(target: self, action: #selector(hideKeyboard))
+        view.addGestureRecognizer(gestureKeyboard)
+        
+    }
+    
+    //HideKeyboard
+    @objc func hideKeyboard(){
+        view.endEditing(true)
+    }
+    
+    
+    
+    //Save Button
+    @IBAction func saveButton(_ sender: Any) {
+        
     }
     
     
