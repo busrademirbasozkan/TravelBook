@@ -12,13 +12,49 @@ class FirstViewController: UIViewController,UITableViewDelegate, UITableViewData
     
     
     @IBOutlet weak var tableView: UITableView!
+    var idArray = [UUID]()
+    var nameArray = [String]()
     
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        tableView.delegate = self
+        tableView.dataSource = self
+        
+        getData()
+        
         //UIBarbutton
         navigationController?.navigationBar.topItem?.rightBarButtonItem = UIBarButtonItem(barButtonSystemItem: UIBarButtonItem.SystemItem.add, target: self, action: #selector(barButton))
 
+        
+    }
+    
+    // CoreDatadan verileri çekmek için
+    func getData(){
+        idArray.removeAll(keepingCapacity: false)
+        nameArray.removeAll(keepingCapacity: false)
+        
+        let appDelegate = UIApplication.shared.delegate as! AppDelegate
+        let context = appDelegate.persistentContainer.viewContext
+        
+        let fetchRequest = NSFetchRequest<NSFetchRequestResult>(entityName: "Places")
+        fetchRequest.returnsObjectsAsFaults = false
+        
+        do {
+            let results = try context.fetch(fetchRequest)
+            if results.count > 0{
+                for result in results as! [NSManagedObject]{
+                    if let name = result.value(forKey: "name") as? String{
+                        self.nameArray.append(name)
+                    }
+                    if let id = result.value(forKey: "id") as? UUID{
+                        self.idArray.append(id)
+                    }
+                    self.tableView.reloadData()
+                }
+            }
+        }catch{
+        }
         
     }
     
@@ -30,11 +66,11 @@ class FirstViewController: UIViewController,UITableViewDelegate, UITableViewData
 
     //TableView ayarları
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return 10
+        return nameArray.count
     }
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = UITableViewCell()
-        cell.textLabel?.text = "test"
+        cell.textLabel?.text = nameArray[indexPath.row]
         return cell
     }
 
