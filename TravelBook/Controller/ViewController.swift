@@ -23,18 +23,35 @@ class ViewController: UIViewController, MKMapViewDelegate , CLLocationManagerDel
         locationManager.requestWhenInUseAuthorization() // kullanıcının konumuna ne zaman ulaşacağımızı seçmeliyiz.
         locationManager.startUpdatingLocation() // kullanıcı konumu bu komut ile alınmaya başlanıyor
         
+        
+        // pinleme işlemi
+        let gestureRecognizer = UILongPressGestureRecognizer(target: self, action: #selector(chooseLocation(gestureRecognizer: ))) //uzun basınca çağırılacak
+        gestureRecognizer.minimumPressDuration = 2 // kullanıcının minimum ne kadar süre basacağını belirleriz.
+        mapView.addGestureRecognizer(gestureRecognizer)
+    }
+    
+    
+    //pinleme fonksiyonu
+    @objc func chooseLocation(gestureRecognizer:UILongPressGestureRecognizer){ //içerisine input koyunca bu fonksiyonda otomatik olarak gestureRecognizer ve attributelarına ulaşabilirim.
+        if gestureRecognizer.state == .began{ // öncelikle dokunma başladı mı bunu kontrol etmek gerekiyor.
+            let touchedPoint = gestureRecognizer.location(in: self.mapView) // dokunulan yerin locationu alınır.
+            let touchedCoordinates = self.mapView.convert(touchedPoint, toCoordinateFrom: self.mapView) // locationun koordinatları belirlendi.
+            //pin ekleme
+            let annotation = MKPointAnnotation()
+            annotation.coordinate = touchedCoordinates
+            annotation.title = "New Annotation"
+            annotation.subtitle = "Travel Book"
+            self.mapView.addAnnotation(annotation)
+        }
     }
     
     
     // alınan locationlarla ne işlem yapacağımızı belirlediğimiz fonksiyon
     func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
-        
         let location = CLLocationCoordinate2D(latitude: locations[0].coordinate.latitude, longitude: locations[0].coordinate.longitude)  // oluşan bir locationa zoomlamak için
-        let span = MKCoordinateSpan(latitudeDelta: 0.1, longitudeDelta: 0.1) // zoom seviyesi seçmemiz gerek
+        let span = MKCoordinateSpan(latitudeDelta: 0.01, longitudeDelta: 0.01) // zoom seviyesi seçmemiz gerek
         let region = MKCoordinateRegion(center: location, span: span)
         mapView.setRegion(region, animated: true)
-        
-        
     }
 
 
