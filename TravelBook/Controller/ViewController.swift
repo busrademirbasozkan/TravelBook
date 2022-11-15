@@ -8,6 +8,7 @@
 import UIKit
 import MapKit
 import CoreLocation // kullanıcının konumunu alabilmek için ilgili kütüphane
+import CoreData
 
 class ViewController: UIViewController, MKMapViewDelegate , CLLocationManagerDelegate{
 
@@ -43,13 +44,10 @@ class ViewController: UIViewController, MKMapViewDelegate , CLLocationManagerDel
         view.endEditing(true)
     }
     
-    
-    
     //Save Button
     @IBAction func saveButton(_ sender: Any) {
         
     }
-    
     
     //pinleme fonksiyonu
     @objc func chooseLocation(gestureRecognizer:UILongPressGestureRecognizer){ //içerisine input koyunca bu fonksiyonda otomatik olarak gestureRecognizer ve attributelarına ulaşabilirim.
@@ -64,7 +62,6 @@ class ViewController: UIViewController, MKMapViewDelegate , CLLocationManagerDel
             self.mapView.addAnnotation(annotation)
         }
     }
-    
     
     // alınan locationlarla ne işlem yapacağımızı belirlediğimiz fonksiyon
     func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
