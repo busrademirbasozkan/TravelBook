@@ -16,6 +16,8 @@ class ViewController: UIViewController, MKMapViewDelegate , CLLocationManagerDel
     @IBOutlet weak var nameTextField: UITextField!
     @IBOutlet weak var mapView: MKMapView!
     var locationManager = CLLocationManager()
+    var chosenLatitude = Double()
+    var chosenLongitude = Double()
     
     
     override func viewDidLoad() {
@@ -46,6 +48,22 @@ class ViewController: UIViewController, MKMapViewDelegate , CLLocationManagerDel
     
     //Save Button
     @IBAction func saveButton(_ sender: Any) {
+        //CoreData
+        let appDelegate = UIApplication.shared.delegate as! AppDelegate
+        let context = appDelegate.persistentContainer.viewContext
+        
+        let newPlaces = NSEntityDescription.insertNewObject(forEntityName: "Places", into: context)
+        newPlaces.setValue(nameTextField.text!, forKey: "name")
+        newPlaces.setValue(commentTextField.text!, forKey: "comment")
+        newPlaces.setValue(UUID(), forKey: "id")
+        newPlaces.setValue(chosenLatitude, forKey: "latitude")
+        newPlaces.setValue(chosenLongitude, forKey: "longitude")
+        
+        do{
+            try context.save()
+        }catch{
+            
+        }
         
     }
     
@@ -54,6 +72,8 @@ class ViewController: UIViewController, MKMapViewDelegate , CLLocationManagerDel
         if gestureRecognizer.state == .began{ // öncelikle dokunma başladı mı bunu kontrol etmek gerekiyor.
             let touchedPoint = gestureRecognizer.location(in: self.mapView) // dokunulan yerin locationu alınır.
             let touchedCoordinates = self.mapView.convert(touchedPoint, toCoordinateFrom: self.mapView) // locationun koordinatları belirlendi.
+            chosenLatitude = touchedCoordinates.latitude
+            chosenLongitude = touchedCoordinates.longitude
             //pin ekleme
             let annotation = MKPointAnnotation()
             annotation.coordinate = touchedCoordinates
