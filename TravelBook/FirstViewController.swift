@@ -14,6 +14,9 @@ class FirstViewController: UIViewController,UITableViewDelegate, UITableViewData
     @IBOutlet weak var tableView: UITableView!
     var idArray = [UUID]()
     var nameArray = [String]()
+    var choseName = ""
+    var chosenId : UUID?
+    
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -30,7 +33,7 @@ class FirstViewController: UIViewController,UITableViewDelegate, UITableViewData
     }
     
     // CoreDatadan verileri çekmek için
-    func getData(){
+    @objc func getData(){
         idArray.removeAll(keepingCapacity: false)
         nameArray.removeAll(keepingCapacity: false)
         
@@ -58,8 +61,13 @@ class FirstViewController: UIViewController,UITableViewDelegate, UITableViewData
         
     }
     
+    override func viewWillAppear(_ animated: Bool) {
+        NotificationCenter.default.addObserver(self, selector: #selector(getData), name: NSNotification.Name("newData"), object: nil)
+    }
+    
     //BarButton Func
     @objc func barButton(){
+        choseName = ""
         performSegue(withIdentifier: "toVC", sender: nil)
     }
     
@@ -72,6 +80,22 @@ class FirstViewController: UIViewController,UITableViewDelegate, UITableViewData
         let cell = UITableViewCell()
         cell.textLabel?.text = nameArray[indexPath.row]
         return cell
+    }
+    
+    //bilgileri görüntüleyebilmek için
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        choseName = nameArray[indexPath.row]
+        chosenId = idArray[indexPath.row]
+        performSegue(withIdentifier: "toVC", sender: nil)
+    }
+    
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        if segue.identifier == "toVC"{
+            let destination = segue.destination as! ViewController
+            destination.selectedName = choseName
+            destination.selectedId = chosenId
+        }
+        
     }
 
 }

@@ -96,6 +96,7 @@
                         <outlet property="commentTextField" destination="UbP-Nl-29a" id="0fP-Fg-h2a"/>
                         <outlet property="mapView" destination="gso-sG-yI3" id="1bU-8W-lXW"/>
                         <outlet property="nameTextField" destination="3XK-RQ-95L" id="eH5-dP-ZTt"/>
+                        <outlet property="saveClicked" destination="GqY-JK-J5F" id="1YX-WV-ffa"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="dkx-z0-nzr" sceneMemberID="firstResponder"/>

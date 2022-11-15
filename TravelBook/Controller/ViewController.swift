@@ -15,9 +15,12 @@ class ViewController: UIViewController, MKMapViewDelegate , CLLocationManagerDel
     @IBOutlet weak var commentTextField: UITextField!
     @IBOutlet weak var nameTextField: UITextField!
     @IBOutlet weak var mapView: MKMapView!
+    @IBOutlet weak var saveClicked: UIButton!
     var locationManager = CLLocationManager()
     var chosenLatitude = Double()
     var chosenLongitude = Double()
+    var selectedName = ""
+    var selectedId : UUID?
     
     
     override func viewDidLoad() {
@@ -38,6 +41,32 @@ class ViewController: UIViewController, MKMapViewDelegate , CLLocationManagerDel
         //HideKeyboard
         let gestureKeyboard = UITapGestureRecognizer(target: self, action: #selector(hideKeyboard))
         view.addGestureRecognizer(gestureKeyboard)
+        
+        
+        //bilgileri gösterme
+        if selectedName != ""{
+            saveClicked.isHidden = true
+            //CoreData
+            let appDelegate = UIApplication.shared.delegate as! AppDelegate
+            let context = appDelegate.persistentContainer.viewContext
+            let fetchRequest = NSFetchRequest<NSFetchRequestResult>(entityName: "Places")
+            let idString = selectedId?.uuidString
+            fetchRequest.predicate = NSPredicate(format: "id:%@", idString!)
+            fetchRequest.returnsObjectsAsFaults = false
+            do{
+                let results = try context.fetch(fetchRequest)
+                if results.count>0{
+                    
+                }
+            }catch{
+                
+            }
+            
+        }else{
+            saveClicked.isHidden = false
+            saveClicked.isEnabled = false
+        }
+        
         
     }
     
@@ -64,6 +93,10 @@ class ViewController: UIViewController, MKMapViewDelegate , CLLocationManagerDel
         }catch{
             
         }
+        
+        //butona basınca tableviewa dönmek için
+        NotificationCenter.default.post(name: NSNotification.Name("newData"), object: nil)
+        self.navigationController?.popViewController(animated: true)
         
     }
     
