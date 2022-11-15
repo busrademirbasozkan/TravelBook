@@ -11,8 +11,11 @@ import CoreLocation // kullanıcının konumunu alabilmek için ilgili kütüpha
 
 class ViewController: UIViewController, MKMapViewDelegate , CLLocationManagerDelegate{
 
+    @IBOutlet weak var commentTextField: UITextField!
+    @IBOutlet weak var nameTextField: UITextField!
     @IBOutlet weak var mapView: MKMapView!
     var locationManager = CLLocationManager()
+    
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -39,8 +42,8 @@ class ViewController: UIViewController, MKMapViewDelegate , CLLocationManagerDel
             //pin ekleme
             let annotation = MKPointAnnotation()
             annotation.coordinate = touchedCoordinates
-            annotation.title = "New Annotation"
-            annotation.subtitle = "Travel Book"
+            annotation.title = nameTextField.text
+            annotation.subtitle = commentTextField.text
             self.mapView.addAnnotation(annotation)
         }
     }
