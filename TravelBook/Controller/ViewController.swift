@@ -11,7 +11,7 @@ import CoreLocation // kullanıcının konumunu alabilmek için ilgili kütüpha
 import CoreData
 
 class ViewController: UIViewController, MKMapViewDelegate , CLLocationManagerDelegate{
-
+    
     @IBOutlet weak var commentTextField: UITextField!
     @IBOutlet weak var nameTextField: UITextField!
     @IBOutlet weak var mapView: MKMapView!
@@ -21,6 +21,10 @@ class ViewController: UIViewController, MKMapViewDelegate , CLLocationManagerDel
     var chosenLongitude = Double()
     var selectedName = ""
     var selectedId : UUID?
+    var annotationName = ""
+    var annotationComment = ""
+    var annotationLatitude = Double()
+    var annotationLongitude = Double()
     
     
     override func viewDidLoad() {
@@ -37,38 +41,64 @@ class ViewController: UIViewController, MKMapViewDelegate , CLLocationManagerDel
         let gestureRecognizer = UILongPressGestureRecognizer(target: self, action: #selector(chooseLocation(gestureRecognizer: ))) //uzun basınca çağırılacak
         gestureRecognizer.minimumPressDuration = 2 // kullanıcının minimum ne kadar süre basacağını belirleriz.
         mapView.addGestureRecognizer(gestureRecognizer)
-         
+        
         //HideKeyboard
         let gestureKeyboard = UITapGestureRecognizer(target: self, action: #selector(hideKeyboard))
         view.addGestureRecognizer(gestureKeyboard)
         
-        
         //bilgileri gösterme
-        if selectedName != ""{
+        if selectedName != "" {
             saveClicked.isHidden = true
             //CoreData
             let appDelegate = UIApplication.shared.delegate as! AppDelegate
             let context = appDelegate.persistentContainer.viewContext
+            
             let fetchRequest = NSFetchRequest<NSFetchRequestResult>(entityName: "Places")
-            let idString = selectedId?.uuidString
-            fetchRequest.predicate = NSPredicate(format: "id:%@", idString!)
+            let idString = selectedId!.uuidString
+            fetchRequest.predicate = NSPredicate(format: "id = %@", idString) //filtreleme işlemi yapıyoruz. Sadece bu id'ye ait alan bilgileri çağır.
             fetchRequest.returnsObjectsAsFaults = false
+            
             do{
                 let results = try context.fetch(fetchRequest)
-                if results.count>0{
-                    
+                if results.count > 0 {
+                    for result in results as! [NSManagedObject]{
+                        if let name = result.value(forKey: "name") as? String{
+                            annotationName = name
+                            
+                            if let comment = result.value(forKey: "comment") as? String{
+                                annotationComment = comment
+                                
+                                if let latitude = result.value(forKey: "latitude") as? Double{
+                                    annotationLatitude = latitude
+                                    
+                                    if let longitude = result.value(forKey: "longitude") as? Double{
+                                        annotationLongitude = longitude
+                                        
+                                        //pinin tekrar gösterilmesi
+                                        let annotation = MKPointAnnotation()
+                                        annotation.title = annotationName
+                                        annotation.subtitle = annotationComment
+                                        let coordinate = CLLocationCoordinate2D(latitude: annotationLatitude, longitude: annotationLongitude)
+                                        annotation.coordinate = coordinate
+                                        
+                                        mapView.addAnnotation(annotation)
+                                        nameTextField.text = annotationName
+                                        commentTextField.text = annotationComment
+                                    }
+                                }
+                            }
+                        }
+                    }
                 }
             }catch{
-                
             }
-            
         }else{
             saveClicked.isHidden = false
             saveClicked.isEnabled = false
         }
         
-        
     }
+
     
     //HideKeyboard
     @objc func hideKeyboard(){

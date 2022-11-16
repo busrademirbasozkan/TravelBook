@@ -29,7 +29,10 @@ class FirstViewController: UIViewController,UITableViewDelegate, UITableViewData
         //UIBarbutton
         navigationController?.navigationBar.topItem?.rightBarButtonItem = UIBarButtonItem(barButtonSystemItem: UIBarButtonItem.SystemItem.add, target: self, action: #selector(barButton))
 
-        
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        NotificationCenter.default.addObserver(self, selector: #selector(getData), name: NSNotification.Name("newData"), object: nil)
     }
     
     // CoreDatadan verileri çekmek için
@@ -58,12 +61,8 @@ class FirstViewController: UIViewController,UITableViewDelegate, UITableViewData
             }
         }catch{
         }
-        
     }
     
-    override func viewWillAppear(_ animated: Bool) {
-        NotificationCenter.default.addObserver(self, selector: #selector(getData), name: NSNotification.Name("newData"), object: nil)
-    }
     
     //BarButton Func
     @objc func barButton(){
@@ -90,12 +89,11 @@ class FirstViewController: UIViewController,UITableViewDelegate, UITableViewData
     }
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        if segue.identifier == "toVC"{
+        if segue.identifier == "toVC" {
             let destination = segue.destination as! ViewController
             destination.selectedName = choseName
             destination.selectedId = chosenId
         }
-        
     }
 
 }
