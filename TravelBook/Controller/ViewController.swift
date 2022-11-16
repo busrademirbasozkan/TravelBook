@@ -84,6 +84,12 @@ class ViewController: UIViewController, MKMapViewDelegate , CLLocationManagerDel
                                         mapView.addAnnotation(annotation)
                                         nameTextField.text = annotationName
                                         commentTextField.text = annotationComment
+                                        
+                                        locationManager.stopUpdatingLocation() // Kullanıcının yeni konumunu getirmemesi için. ilk kaydettiğim konumun gelebilmesi için
+                                        //Güncel konum değil tıklanan locationın gösterilmesi için. Annotation oluştuma yapılır yine
+                                        let span = MKCoordinateSpan(latitudeDelta: 0.03, longitudeDelta: 0.03)
+                                        let region = MKCoordinateRegion(center: coordinate, span: span)
+                                        mapView.setRegion(region, animated: true)
                                     }
                                 }
                             }
@@ -93,8 +99,7 @@ class ViewController: UIViewController, MKMapViewDelegate , CLLocationManagerDel
             }catch{
             }
         }else{
-            saveClicked.isHidden = false
-            saveClicked.isEnabled = false
+        
         }
         
     }
@@ -148,10 +153,12 @@ class ViewController: UIViewController, MKMapViewDelegate , CLLocationManagerDel
     
     // alınan locationlarla ne işlem yapacağımızı belirlediğimiz fonksiyon
     func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
-        let location = CLLocationCoordinate2D(latitude: locations[0].coordinate.latitude, longitude: locations[0].coordinate.longitude)  // oluşan bir locationa zoomlamak için
-        let span = MKCoordinateSpan(latitudeDelta: 0.01, longitudeDelta: 0.01) // zoom seviyesi seçmemiz gerek
-        let region = MKCoordinateRegion(center: location, span: span)
-        mapView.setRegion(region, animated: true)
+        if selectedName == ""{
+            let location = CLLocationCoordinate2D(latitude: locations[0].coordinate.latitude, longitude: locations[0].coordinate.longitude)  // oluşan bir locationa zoomlamak için
+            let span = MKCoordinateSpan(latitudeDelta: 0.03, longitudeDelta: 0.03) // zoom seviyesi seçmemiz gerek
+            let region = MKCoordinateRegion(center: location, span: span)
+            mapView.setRegion(region, animated: true)
+        }
     }
 
 
