@@ -160,6 +160,27 @@ class ViewController: UIViewController, MKMapViewDelegate , CLLocationManagerDel
             mapView.setRegion(region, animated: true)
         }
     }
+    
+    func mapView(_ mapView: MKMapView, viewFor annotation: MKAnnotation) -> MKAnnotationView? {
+        if annotation is MKUserLocation {
+            return nil
+        }
+        let reuseId = "MyAnnotation"
+        var pinView = mapView.dequeueReusableAnnotationView(withIdentifier: reuseId) as? MKPinAnnotationView
+        
+        if pinView == nil {
+            pinView = MKPinAnnotationView(annotation: annotation, reuseIdentifier: reuseId)
+            pinView?.canShowCallout = true // baloncuk ile ekstra bilgi gösterebildiğimiz yer
+            pinView?.tintColor = UIColor.blue
+            
+            let button = UIButton(type: UIButton.ButtonType.detailDisclosure) // detay göstereceğim bir buton
+            pinView?.rightCalloutAccessoryView = button
+        }else{
+            pinView?.annotation = annotation
+        }
+        
+        return pinView
+    }
 
 
 }
