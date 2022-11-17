@@ -161,9 +161,11 @@ class ViewController: UIViewController, MKMapViewDelegate , CLLocationManagerDel
         }
     }
     
+    
+    // pini(annotation) özelleştirerek yanına buton ekleme
     func mapView(_ mapView: MKMapView, viewFor annotation: MKAnnotation) -> MKAnnotationView? {
         if annotation is MKUserLocation {
-            return nil
+            return nil //kullanıcının yerini pin ile göstermemek için nil döndürüyoruz
         }
         let reuseId = "MyAnnotation"
         var pinView = mapView.dequeueReusableAnnotationView(withIdentifier: reuseId) as? MKPinAnnotationView
@@ -171,17 +173,41 @@ class ViewController: UIViewController, MKMapViewDelegate , CLLocationManagerDel
         if pinView == nil {
             pinView = MKPinAnnotationView(annotation: annotation, reuseIdentifier: reuseId)
             pinView?.canShowCallout = true // baloncuk ile ekstra bilgi gösterebildiğimiz yer
-            pinView?.tintColor = UIColor.blue
+            pinView?.tintColor = UIColor.black
             
             let button = UIButton(type: UIButton.ButtonType.detailDisclosure) // detay göstereceğim bir buton
             pinView?.rightCalloutAccessoryView = button
         }else{
             pinView?.annotation = annotation
         }
-        
         return pinView
     }
-
+    
+    
+    //baloncuğa tıklandığında yapılacak işlemler
+    func mapView(_ mapView: MKMapView, annotationView view: MKAnnotationView, calloutAccessoryControlTapped control: UIControl) {
+        if selectedName != "" {
+            let newLocation = CLLocation(latitude: annotationLatitude, longitude: annotationLongitude)
+            
+            // koordinatlar ve yerler arasında bağlantı kurmamızı sağlayan bir sınıf: CLGeocoder
+            CLGeocoder().reverseGeocodeLocation(newLocation) { (placemarks, error) in
+                //closure: sizin işleminizin sonucunda placmarks olan bir dizi yada hata veren bir yapı
+                if let placemark = placemarks {
+                    if placemark.count > 0 {
+                        let newPlacemark = MKPlacemark(placemark: placemark[0])
+                        let item = MKMapItem(placemark: newPlacemark)
+                        item.name = self.annotationName
+                        let launchOption = [MKLaunchOptionsDirectionsModeKey:MKLaunchOptionsDirectionsModeDriving]
+                        item.openInMaps(launchOptions: launchOption)
+                    }
+                    
+                }
+            }
+        }
+        
+        
+    }
+    
 
 }
 
